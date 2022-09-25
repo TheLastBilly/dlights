@@ -417,7 +417,8 @@ void
 loop( void )
 {
     WiFiClient client;
-    int i = 0, ret = 0;
+    CRGB rgb;
+    int i = 0, s = 0, ret = 0;
     char c = 0;
 
     // Handle serial commands
@@ -493,16 +494,24 @@ loop( void )
             LOG("received valid connection from \"%s\"", 
                 client.remoteIP().toString().c_str());
 
-            memset(LED_BUFFER, 0, sizeof(LED_BUFFER));
-
             i = 0;
+            s = 0;
             ptr = (uint8_t *)LED_BUFFER;
             while(client && client.available() > 0)
             {
                 if(i >= sizeof(LED_BUFFER))
                     break;
-                    
-                ptr[i++] = client.read();
+                
+                rgb.raw[i % 3] = client.read();
+                if(i%3 == 2)
+                {
+                    if(s >= sizeof(LED_BUFFER)/sizeof(LED_BUFFER[0]))
+                        break;
+                        
+                    LED_BUFFER[s++] = rgb;
+                }
+
+                i++;
             }
         }
 
