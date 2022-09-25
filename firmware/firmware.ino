@@ -84,6 +84,12 @@ struct
     IPAddress ip, gateway, submask;
 } settings;
 
+struct command_t
+{
+    const char * name, description;
+    void (*func)(const String &argument);
+};
+
 static CRGB LED_BUFFER[MAX_LED_ON_STRIP]        = {0};
 static char CMD_BUFFER[MAX_CMD_BUFFER_SIZE]     = {0};
 static char _PRINTF_BUF[MAX_PRINTF_BUFFER]      = {0};
@@ -296,6 +302,26 @@ stop( void )
     while(1) 
         delay(100);
 }
+
+
+const command_t COMMANDS[0] PROGMEM = {
+    (command_t){
+        .name = "setSSID",
+        .description = "Set's the SSID the WiFi module"
+            " will connect to",
+        .func = setSSID
+    },
+    (command_t){
+        .name = "setPASS",
+        .description = "Set's the password the WiFi"
+            " module will use to connect to the Access Point",
+        .func = setSSID
+    },
+    (command_t){
+        .name = "connectToWifi",
+        .description = "Connects to the WiFi network",
+    }
+};
 
 int
 processCommand( const String &line )
